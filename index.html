@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GradeIQ — Should I Grade This Card?</title>
+<meta name="description" content="Free PSA grading calculator for sports card collectors. Enter your card values and get an instant expected value, profit estimate, and grade-or-skip recommendation.">
+<meta name="keywords" content="PSA grading calculator, should I grade this card, sports card grading, PSA 10 expected value, card grading profit">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://gradeiq.app/">
+<meta name="theme-color" content="#0f0f0f">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+
+<!-- ===== SOCIAL SHARE PREVIEWS (Open Graph + Twitter) =====
+     Update og:url and og:image once you have a domain + a preview
+     image (1200×630px works best). Without og:image, Reddit/FB/Discord
+     will show a blank or generic preview when this link is shared. ==== -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="GradeIQ — Should I Grade This Card?">
+<meta property="og:description" content="Free PSA grading calculator. Get instant expected value, profit estimate, and a grade-or-skip recommendation in seconds.">
+<meta property="og:url" content="https://gradeiq.app">
+<meta property="og:image" content="https://gradeiq.app/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="GradeIQ — Should I Grade This Card?">
+<meta name="twitter:description" content="Free PSA grading calculator. Get instant expected value, profit estimate, and a grade-or-skip recommendation in seconds.">
+<meta name="twitter:image" content="https://gradeiq.app/og-image.png">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+<!-- ===== ANALYTICS (Plausible — privacy-friendly, no cookie banner needed) =====
+     1. Sign up at plausible.io (or swap for GA4 if you prefer)
+     2. Replace "gradeiq.app" below with your real domain
+     3. Uncomment the script tag
+     ============================================================ -->
+<!-- <script defer data-domain="gradeiq.app" src="https://plausible.io/js/script.js"></script> -->
+
+<!-- ===== REPLACE WITH YOUR GOOGLE ADSENSE CODE =====
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+===================================================== -->
+
+<!-- ===== STRUCTURED DATA (JSON-LD) =====
+     Helps Google understand this is a tool (WebApplication) and can
+     surface your FAQ answers directly in search results as expandable
+     snippets. Update the "url" fields once you have your real domain. ==== -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "GradeIQ",
+  "url": "https://gradeiq.app",
+  "description": "Free PSA grading calculator for sports card collectors. Calculates expected value, profit, and a grade-or-skip recommendation based on raw value, PSA 9/10 comps, and grading odds.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How is expected value calculated?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "EV = (PSA 10 odds × PSA 10 value) + (estimated PSA 9 odds × PSA 9 value) + (remaining probability × 90% of raw value). The PSA 9 probability is estimated at roughly 65% of the non-10 probability, a reasonable baseline for modern cards in solid condition."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Where do I find accurate PSA 9 and PSA 10 values?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Search eBay for the exact card name plus PSA 9 or PSA 10, then filter to sold listings. Average the last 3 to 5 sales for a reliable number, and avoid asking prices since they're often unrealistic."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I estimate my PSA 10 odds?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Look up the card on PSA's population report and divide the PSA 10 count by total cards graded to get a historical baseline rate, then adjust based on your card's actual condition."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which PSA fee tier should I choose?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Regular is the most economical option but has the longest turnaround. Express and Super Express cost more but return your card faster, which is worth it for time-sensitive cards."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What counts as a good expected value when grading a card?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A net profit of $20 or more after all costs is a solid green light to grade. Zero to $20 is marginal. Negative expected value means selling raw is likely the better option."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I use PSA, BGS, or SGC for grading?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PSA generally has the highest liquidity and name recognition for modern cards. BGS Pristine 10s often command a premium on vintage and high-end cards. SGC tends to be faster and more affordable for vintage submissions."
+      }
+    }
+  ]
+}
+</script>
+
+<style>
+  :root {
+    --ink: #0f0f0f;
+    --ink2: #3a3a3a;
+    --ink3: #767676;
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --border: #e2dfd8;
+    --accent: #1a56db;
+    --accent-lt: #ebf0fd;
+    --green: #166534;
+    --green-bg: #dcfce7;
+    --red: #991b1b;
+    --red-bg: #fee2e2;
+    --amber: #92400e;
+    --amber-bg: #fef3c7;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Inter', sans-serif;
+    --display: 'Syne', sans-serif;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── NAV ── */
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-logo {
+    font-family: var(--display);
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--ink);
+    text-decoration: none;
+    letter-spacing: -.02em;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 24px; align-items: center; }
+  .nav-links a {
+    font-size: 13px;
+    color: var(--ink3);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .nav-links a:hover { color: var(--ink); }
+
+  /* ── AD SLOTS ──
+     Hidden by default so no empty placeholder boxes show to visitors
+     before AdSense is approved. See the toggle block below this one. */
+  .ad-slot, .ad-bar, .ad-inline-wrap, .sidebar-ad {
+    display: none;
+  }
+  .ad-slot {
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    align-items: center;
+    justify-content: center;
+    color: var(--ink3);
+    font-size: 12px;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  .ad-leaderboard { height: 90px; width: 100%; max-width: 728px; margin: 0 auto; }
+  .ad-rect { height: 250px; width: 100%; max-width: 300px; }
+  .ad-inline { height: 90px; width: 100%; }
+
+  /* ── TURN ADS ON ──
+     Once your AdSense account is approved and you've replaced the
+     placeholder <ins> comments below with real ad codes, delete the
+     block above and uncomment this one (or just edit the values
+     directly above: change "display: none" to "display: flex/block").
+
+  .ad-slot { display: none !important; }
+  .ad-bar { display: flex !important; }
+  .ad-inline-wrap, .sidebar-ad { display: flex !important; }
+  */
+
+  /* ── LAYOUT ── */
+  .page-wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+  .ad-bar { padding: 16px 20px; display: flex; justify-content: center; background: var(--bg); }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 52px 0 40px;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-lt);
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-family: var(--display);
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -.03em;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+  .hero p {
+    font-size: 17px;
+    color: var(--ink2);
+    max-width: 520px;
+    margin: 0 auto 8px;
+  }
+  .hero-sub {
+    font-size: 13px;
+    color: var(--ink3);
+    margin-top: 8px;
+  }
+
+  /* ── MAIN GRID ── */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    align-items: start;
+    padding-bottom: 60px;
+  }
+  @media (max-width: 760px) {
+    .main-grid { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+
+  /* ── CALCULATOR CARD ── */
+  .calc-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .calc-header {
+    background: var(--ink);
+    padding: 20px 28px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .calc-header-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .calc-header-icon svg { width: 18px; height: 18px; fill: #fff; }
+  .calc-header-text h2 {
+    font-family: var(--display);
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -.01em;
+  }
+  .calc-header-text p { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 1px; }
+  .calc-body { padding: 28px; }
+
+  /* ── SECTION LABELS ── */
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    margin-top: 24px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  /* ── FORM ── */
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink2);
+    margin-bottom: 6px;
+  }
+  .field input, .field select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: var(--sans);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+    color: var(--ink);
+    transition: border-color .15s, box-shadow .15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .field input:focus, .field select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(26,86,219,.12);
+    background: #fff;
+  }
+  .field input::placeholder { color: var(--ink3); }
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23767676' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+  .field-hint { font-size: 12px; color: var(--ink3); margin-top: 4px; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media (max-width: 500px) {
+    .grid3 { grid-template-columns: 1fr; }
+    .grid2 { grid-template-columns: 1fr; }
+  }
+
+  /* ── SLIDER ── */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 6px;
+  }
+  .slider-row input[type=range] {
+    flex: 1;
+    padding: 0;
+    height: 4px;
+    border: none;
+    background: transparent;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .slider-val {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    min-width: 42px;
+    text-align: right;
+  }
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--ink3);
+    margin-top: 4px;
+  }
+
+  /* ── BUTTON ── */
+  .calc-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: var(--sans);
+    cursor: pointer;
+    margin-top: 24px;
+    letter-spacing: -.01em;
+    transition: background .15s, transform .1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .calc-btn:hover { background: #1648c0; }
+  .calc-btn:active { transform: scale(.99); }
+  .calc-btn svg { width: 16px; height: 16px; fill: #fff; }
+
+  /* ── RESULTS ── */
+  .results { display: none; margin-top: 28px; }
+  .results.show { display: block; }
+
+  .result-divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 24px;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 500px) { .metrics-grid { grid-template-columns: 1fr; } }
+
+  .metric {
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .metric-label {
+    font-size: 11px;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--ink3);
+    margin-bottom: 6px;
+  }
+  .metric-value {
+    font-size: 22px;
+    font-weight: 600;
+    font-family: var(--mono);
+    color: var(--ink);
+  }
+  .metric-value.pos { color: var(--green); }
+  .metric-value.neg { color: var(--red); }
+
+  /* ── RECOMMENDATION ── */
+  .rec {
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    border-width: 1px;
+    border-style: solid;
+  }
+  .rec.grade { background: var(--green-bg); border-color: #86efac; }
+  .rec.skip  { background: var(--red-bg);   border-color: #fca5a5; }
+  .rec.maybe { background: var(--amber-bg); border-color: #fcd34d; }
+  .rec-icon { font-size: 22px; flex-shrink: 0; line-height: 1; margin-top: 1px; }
+  .rec-title { font-size: 16px; font-weight: 600; margin-bottom: 3px; }
+  .rec.grade .rec-title { color: var(--green); }
+  .rec.skip  .rec-title { color: var(--red); }
+  .rec.maybe .rec-title { color: var(--amber); }
+  .rec-body  { font-size: 13px; color: var(--ink2); line-height: 1.5; }
+
+  /* ── BREAKDOWN TABLE ── */
+  .breakdown {
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 20px;
+  }
+  .breakdown-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 10px;
+  }
+  .brow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--ink2);
+  }
+  .brow:last-child { border-bottom: none; }
+  .brow-val { font-family: var(--mono); font-weight: 500; color: var(--ink); }
+
+  /* ── RESEARCH BUTTONS ── */
+  .research-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 6px;
+  }
+  @media (max-width: 600px) { .research-grid { grid-template-columns: 1fr; } }
+
+  .research-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color .15s, background .15s;
+    font-family: var(--sans);
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .research-btn:hover { border-color: var(--accent); background: var(--accent-lt); }
+  .research-btn-icon { font-size: 20px; }
+  .research-btn-label { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .research-btn-sub { font-size: 11px; color: var(--ink3); }
+
+  /* ── SIDEBAR ── */
+  .sidebar { display: flex; flex-direction: column; gap: 16px; }
+  .sidebar-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+  }
+  .sidebar-card h3 {
+    font-family: var(--display);
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--ink);
+  }
+  .tip-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .tip-list li { font-size: 13px; color: var(--ink2); display: flex; gap: 8px; line-height: 1.4; }
+  .tip-list li::before { content: "→"; color: var(--accent); flex-shrink: 0; font-weight: 600; }
+
+  .grade-scale { display: flex; flex-direction: column; gap: 6px; }
+  .grade-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .grade-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 4px;
+    min-width: 48px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .grade-badge.g10 { background: var(--green-bg); color: var(--green); }
+  .grade-badge.g9  { background: #dbeafe; color: #1e40af; }
+  .grade-badge.g8  { background: var(--amber-bg); color: var(--amber); }
+  .grade-badge.low { background: var(--border); color: var(--ink3); }
+  .grade-desc { color: var(--ink2); line-height: 1.4; }
+
+  /* ── FAQ ── */
+  .faq-section { padding: 60px 0; border-top: 1px solid var(--border); }
+  .faq-section h2 {
+    font-family: var(--display);
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    margin-bottom: 32px;
+    text-align: center;
+  }
+  .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 640px) { .faq-grid { grid-template-columns: 1fr; } }
+  .faq-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+  }
+  .faq-q { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+  .faq-a { font-size: 13px; color: var(--ink2); line-height: 1.6; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    color: rgba(255,255,255,.5);
+    font-size: 12px;
+    padding: 24px;
+    text-align: center;
+    line-height: 1.7;
+  }
+  footer a { color: rgba(255,255,255,.6); text-decoration: none; }
+  footer a:hover { color: #fff; }
+
+  /* ── INLINE AD WRAPPER ── */
+  .ad-inline-wrap { padding: 20px 0 4px; display: flex; justify-content: center; }
+
+  /* ── REDUCED MOTION ── */
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">Grade<span>IQ</span></a>
+  <div class="nav-links">
+    <a href="#calculator">Calculator</a>
+    <a href="#faq">FAQ</a>
+    <a href="https://www.psacard.com" target="_blank" rel="noopener">PSA ↗</a>
+  </div>
+</nav>
+
+<!-- TOP LEADERBOARD AD -->
+<div class="ad-bar">
+  <!-- REPLACE with your AdSense leaderboard unit -->
+  <div class="ad-slot ad-leaderboard">Advertisement · 728×90</div>
+  <!--
+  <ins class="adsbygoogle ad-leaderboard"
+       style="display:inline-block"
+       data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
+       data-ad-slot="XXXXXXXXXX"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  -->
+</div>
+
+<!-- HERO -->
+<div class="page-wrap">
+  <section class="hero">
+    <div class="hero-eyebrow">Free PSA grading calculator</div>
+    <h1>Should I grade<br>this <em>card?</em></h1>
+    <p>Enter your card's values and get an instant expected value, profit estimate, and a clear grade-or-skip verdict.</p>
+    <p class="hero-sub">Used by collectors to answer the #1 question in the hobby — before they spend the money.</p>
+  </section>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid" id="calculator">
+    <!-- CALCULATOR -->
+    <div class="calc-card">
+      <div class="calc-header">
+        <div class="calc-header-icon">
+          <svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zm0 12H4V9h16v10zM6 5h12V3H6v2z"/></svg>
+        </div>
+        <div class="calc-header-text">
+          <h2>Grade or Skip Calculator</h2>
+          <p>Expected value · Profit · Recommendation</p>
+        </div>
+      </div>
+
+      <div class="calc-body">
+
+        <!-- CARD INFO -->
+        <p class="section-label">Card info</p>
+        <div class="field">
+          <label for="cardName">Card name / set / year</label>
+          <input type="text" id="cardName" placeholder="e.g. 2021 Topps Chrome Juan Soto #128" autocomplete="off" />
+        </div>
+
+        <!-- VALUES -->
+        <p class="section-label">Market values</p>
+        <div class="grid3">
+          <div class="field">
+            <label for="rawVal">Raw value ($)</label>
+            <input type="number" id="rawVal" placeholder="25" min="0" step="0.01" />
+          </div>
+          <div class="field">
+            <label for="psa9Val">PSA 9 value ($)</label>
+            <input type="number" id="psa9Val" placeholder="60" min="0" step="0.01" />
+          </div>
+          <div class="field">
+            <label for="psa10Val">PSA 10 value ($)</label>
+            <input type="number" id="psa10Val" placeholder="180" min="0" step="0.01" />
+          </div>
+        </div>
+        <p class="field-hint">Use recent eBay sold prices for the most accurate results.</p>
+
+        <!-- GRADING ODDS -->
+        <p class="section-label">Grading odds</p>
+        <div class="field">
+          <label for="odds10">Estimated PSA 10 probability</label>
+          <div class="slider-row">
+            <input type="range" id="odds10" min="1" max="99" value="30" step="1"
+              oninput="document.getElementById('oddsOut').textContent=this.value+'%'">
+            <span class="slider-val" id="oddsOut">30%</span>
+          </div>
+          <div class="slider-labels"><span>1% — very unlikely</span><span>50%</span><span>99% — near-certain</span></div>
+          <p class="field-hint" style="margin-top:6px">Check PSA's pop report: (PSA 10 count ÷ total graded) gives a rough baseline.</p>
+        </div>
+
+        <!-- FEE -->
+        <div class="field" style="margin-top:16px">
+          <label for="gradeFee">PSA grading tier</label>
+          <select id="gradeFee">
+            <option value="79.99">Regular ($79.99) — 40–50 business days, $1,500 max value</option>
+            <option value="149">Express ($149) — 20–30 business days, $2,500 max value</option>
+            <option value="349">Super Express ($349) — 7–10 business days, $5,000 max value</option>
+            <option value="599">Walk-Through ($599) — on-site at shows</option>
+          </select>
+          <p class="field-hint">PSA fees change — <a href="https://www.psacard.com/services/tradingcardgrading" target="_blank" rel="noopener">verify current pricing at PSAcard.com ↗</a></p>
+        </div>
+
+        <button class="calc-btn" onclick="calculate()">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-7 3a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 10c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z"/></svg>
+          Calculate expected value
+        </button>
+
+        <!-- RESULTS -->
+        <div class="results" id="results">
+          <div style="margin-top:28px;" class="result-divider"></div>
+
+          <div class="metrics-grid">
+            <div class="metric">
+              <div class="metric-label">Expected value</div>
+              <div class="metric-value" id="res-ev">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Total cost</div>
+              <div class="metric-value" id="res-cost">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Net profit</div>
+              <div class="metric-value" id="res-profit">—</div>
+            </div>
+          </div>
+
+          <div id="rec-box"></div>
+
+          <div class="breakdown">
+            <div class="breakdown-title">Full breakdown</div>
+            <div class="brow"><span>PSA 10 probability</span><span class="brow-val" id="b-o10">—</span></div>
+            <div class="brow"><span>Est. PSA 9 probability</span><span class="brow-val" id="b-o9">—</span></div>
+            <div class="brow"><span>Weighted PSA 10 value</span><span class="brow-val" id="b-w10">—</span></div>
+            <div class="brow"><span>Weighted PSA 9 value</span><span class="brow-val" id="b-w9">—</span></div>
+            <div class="brow"><span>Weighted lower-grade value</span><span class="brow-val" id="b-wlow">—</span></div>
+            <div class="brow"><span>Grading fee</span><span class="brow-val" id="b-fee">—</span></div>
+            <div class="brow"><span>Raw card value (opportunity cost)</span><span class="brow-val" id="b-raw">—</span></div>
+          </div>
+
+          <!-- INLINE AD after results -->
+          <div class="ad-inline-wrap">
+            <!-- REPLACE with your AdSense in-article unit -->
+            <div class="ad-slot ad-inline">Advertisement · In-article unit</div>
+            <!--
+            <ins class="adsbygoogle ad-inline"
+                 style="display:block;text-align:center"
+                 data-ad-layout="in-article"
+                 data-ad-format="fluid"
+                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
+                 data-ad-slot="XXXXXXXXXX"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            -->
+          </div>
+
+          <!-- RESEARCH BUTTONS -->
+          <p class="section-label" style="margin-top:24px">Research tools</p>
+          <p style="font-size:13px;color:var(--ink2);margin-bottom:12px;">Verify your inputs with real data before you commit.</p>
+          <div class="research-grid">
+            <a class="research-btn" href="https://www.psacard.com/pop" target="_blank" rel="noopener">
+              <span class="research-btn-icon">📊</span>
+              <span class="research-btn-label">PSA pop report</span>
+              <span class="research-btn-sub">Check PSA 9 & 10 population</span>
+            </a>
+            <a class="research-btn" href="https://www.psacard.com/services/tradingcardgrading" target="_blank" rel="noopener">
+              <span class="research-btn-icon">💳</span>
+              <span class="research-btn-label">Current PSA fees</span>
+              <span class="research-btn-sub">Verify the tier pricing</span>
+            </a>
+            <a class="research-btn" id="ebayBtn" href="https://www.ebay.com/sch/i.html?_nkw=&LH_Sold=1&LH_Complete=1" target="_blank" rel="noopener">
+              <span class="research-btn-icon">🏷️</span>
+              <span class="research-btn-label">eBay sold prices</span>
+              <span class="research-btn-sub">Recent raw & graded comps</span>
+            </a>
+          </div>
+        </div>
+
+      </div><!-- /calc-body -->
+    </div><!-- /calc-card -->
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <!-- Sidebar ad -->
+      <div class="sidebar-ad" style="justify-content:center;">
+        <!-- REPLACE with your AdSense sidebar unit (300×250) -->
+        <div class="ad-slot ad-rect">Advertisement · 300×250</div>
+        <!--
+        <ins class="adsbygoogle ad-rect"
+             style="display:inline-block"
+             data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
+             data-ad-slot="XXXXXXXXXX"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        -->
+      </div>
+
+      <div class="sidebar-card" style="background:var(--accent-lt);border-color:#c7d7f8;">
+        <h3 style="margin-bottom:8px;">How the math works</h3>
+        <p style="font-size:12px;color:var(--ink2);line-height:1.6;">
+          This is an estimate, not an official PSA figure. We weight each grade outcome by your odds input and the comp values you enter, then subtract the fee and your card's current raw value. Your numbers are only as good as the comps and odds you put in — see the tips below.
+        </p>
+      </div>
+
+      <div class="sidebar-card">
+        <h3>Tips for accurate results</h3>
+        <ul class="tip-list">
+          <li>Use eBay <em>sold</em> listings — not asking prices — for raw and PSA values.</li>
+          <li>Check PSA's pop report to calibrate your PSA 10 odds. High-pop cards grade harder to 10.</li>
+          <li>Factor in shipping both ways (~$10–15 total) when evaluating thin-margin cards.</li>
+          <li>Auto-renew and bulk submissions can lower per-card fees if you're submitting multiple cards.</li>
+        </ul>
+      </div>
+
+      <div class="sidebar-card">
+        <h3>PSA grade guide</h3>
+        <div class="grade-scale">
+          <div class="grade-row">
+            <span class="grade-badge g10">PSA 10</span>
+            <span class="grade-desc">Gem Mint — perfect centering, no flaws visible under 5× magnification</span>
+          </div>
+          <div class="grade-row">
+            <span class="grade-badge g9">PSA 9</span>
+            <span class="grade-desc">Mint — one minor flaw only; corners sharp, surface clean</span>
+          </div>
+          <div class="grade-row">
+            <span class="grade-badge g8">PSA 8</span>
+            <span class="grade-desc">Near Mint-Mint — slight corner or edge wear; still clean surface</span>
+          </div>
+          <div class="grade-row">
+            <span class="grade-badge low">PSA 7 &amp; below</span>
+            <span class="grade-desc">Rarely worth the fee unless it's a high-value vintage card</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Second sidebar ad -->
+      <div class="sidebar-ad" style="justify-content:center;">
+        <!-- REPLACE with second AdSense sidebar unit (300×250) -->
+        <div class="ad-slot ad-rect">Advertisement · 300×250</div>
+        <!--
+        <ins class="adsbygoogle ad-rect"
+             style="display:inline-block"
+             data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
+             data-ad-slot="XXXXXXXXXX"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        -->
+      </div>
+    </aside>
+  </div><!-- /main-grid -->
+
+  <!-- FAQ -->
+  <section class="faq-section" id="faq">
+    <h2>Common questions</h2>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <p class="faq-q">How is expected value calculated?</p>
+        <p class="faq-a">EV = (PSA 10 odds × PSA 10 value) + (estimated PSA 9 odds × PSA 9 value) + (remaining probability × 90% of raw value). The PSA 9 probability is estimated at ~65% of the non-10 probability — a reasonable baseline for modern cards in solid condition.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q">Where do I find accurate PSA 9 and PSA 10 values?</p>
+        <p class="faq-a">Search eBay for the exact card name + "PSA 9" or "PSA 10", then filter to <em>Sold Listings</em>. Average the last 3–5 sales for a reliable number. Avoid asking prices — they're often wishful thinking.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q">How do I estimate my PSA 10 odds?</p>
+        <p class="faq-a">Look up the card on PSA's pop report. Divide the PSA 10 count by total cards graded to get a historical rate. Then adjust up or down based on your card's actual condition. New cards with great centering might exceed the pop average; played cards won't reach it.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q">Which PSA fee tier should I choose?</p>
+        <p class="faq-a">Regular ($79.99) is the most economical option but has the longest turnaround (40–50 business days). Express and Super Express cost more but return your card faster — worth it if you're flipping a time-sensitive card like a hot rookie mid-season. Always verify current pricing at PSAcard.com — fees change.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q">What counts as a "good" expected value?</p>
+        <p class="faq-a">A net profit of $20+ after all costs (fee + raw card value) is a solid green light. $0–$20 is marginal — turnaround time and your confidence in the condition matter more there. Negative EV means you'd likely be better off selling raw.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q">Should I use PSA, BGS, or SGC?</p>
+        <p class="faq-a">This calculator uses PSA because it has the highest liquidity and name recognition for most modern cards. BGS (Beckett) Pristine 10s often command a premium on vintage and high-end cards. SGC is faster and more affordable for vintage. The right grader depends on your card and your buyer pool.</p>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /page-wrap -->
+
+<!-- FOOTER AD -->
+<div class="ad-bar" style="border-top:1px solid var(--border);">
+  <!-- REPLACE with your AdSense leaderboard unit -->
+  <div class="ad-slot ad-leaderboard">Advertisement · 728×90</div>
+</div>
+
+<footer>
+  <p><strong style="color:rgba(255,255,255,.8)">GradeIQ</strong> — a free expected value calculator for PSA card grading decisions.</p>
+  <p style="margin-top:6px">
+    <a href="https://www.psacard.com" target="_blank" rel="noopener">PSA Card</a> ·
+    <a href="https://www.ebay.com/b/Sports-Trading-Card-Singles/261328/bn_7117732240" target="_blank" rel="noopener">eBay Sports Cards</a> ·
+    <a href="#faq">FAQ</a>
+  </p>
+  <p style="margin-top:8px">GradeIQ is not affiliated with PSA. Results are estimates only — always verify current market data before submitting cards for grading. © 2025 GradeIQ.</p>
+</footer>
+
+<script>
+  function fmt(n) {
+    return '$' + Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  function pct(n) { return Math.round(n * 100) + '%'; }
+
+  function calculate() {
+    const raw   = parseFloat(document.getElementById('rawVal').value)   || 0;
+    const p9    = parseFloat(document.getElementById('psa9Val').value)   || 0;
+    const p10   = parseFloat(document.getElementById('psa10Val').value)  || 0;
+    const fee   = parseFloat(document.getElementById('gradeFee').value)  || 79.99;
+    const o10   = parseInt(document.getElementById('odds10').value) / 100;
+    const card  = document.getElementById('cardName').value.trim();
+
+    const o9    = Math.min((1 - o10) * 0.65, 1 - o10);
+    const oLow  = Math.max(0, 1 - o10 - o9);
+
+    const ev     = o10 * p10 + o9 * p9 + oLow * raw * 0.90;
+    const cost   = raw + fee;
+    const profit = ev - cost;
+
+    // update eBay button
+    if (card) {
+      document.getElementById('ebayBtn').href =
+        'https://www.ebay.com/sch/i.html?_nkw=' + encodeURIComponent(card) + '&LH_Sold=1&LH_Complete=1';
+    }
+
+    // metrics
+    document.getElementById('res-ev').textContent   = fmt(ev);
+    document.getElementById('res-cost').textContent = fmt(cost);
+
+    const profEl = document.getElementById('res-profit');
+    profEl.textContent = (profit >= 0 ? '+' : '−') + fmt(profit);
+    profEl.className   = 'metric-value' + (profit >= 15 ? ' pos' : profit < 0 ? ' neg' : '');
+
+    // recommendation
+    let rec = '';
+    if (profit >= 20) {
+      rec = `<div class="rec grade">
+        <div class="rec-icon">✅</div>
+        <div>
+          <div class="rec-title">Grade it</div>
+          <div class="rec-body">Strong positive EV of +${fmt(profit)}. The numbers support sending this in — especially if your card shows clean corners, good centering, and a scratch-free surface.</div>
+        </div>
+      </div>`;
+    } else if (profit >= 0) {
+      rec = `<div class="rec maybe">
+        <div class="rec-icon">⚠️</div>
+        <div>
+          <div class="rec-title">Marginal — your call</div>
+          <div class="rec-body">Slightly positive EV of +${fmt(profit)}, but thin. How confident are you in the card's condition? Can you get a lower fee tier? Turnaround time matters here too.</div>
+        </div>
+      </div>`;
+    } else {
+      rec = `<div class="rec skip">
+        <div class="rec-icon">🚫</div>
+        <div>
+          <div class="rec-title">Skip grading</div>
+          <div class="rec-body">Negative EV of −${fmt(profit)}. You'd likely make more selling raw or holding. Try a lower fee tier, or revisit if PSA 10 comps rise.</div>
+        </div>
+      </div>`;
+    }
+    document.getElementById('rec-box').innerHTML = rec;
+
+    // breakdown
+    document.getElementById('b-o10').textContent  = pct(o10);
+    document.getElementById('b-o9').textContent   = pct(o9);
+    document.getElementById('b-w10').textContent  = fmt(o10 * p10);
+    document.getElementById('b-w9').textContent   = fmt(o9 * p9);
+    document.getElementById('b-wlow').textContent = fmt(oLow * raw * 0.90);
+    document.getElementById('b-fee').textContent  = '−' + fmt(fee);
+    document.getElementById('b-raw').textContent  = '−' + fmt(raw);
+
+    const results = document.getElementById('results');
+    results.classList.add('show');
+    results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+</script>
+
+</body>
+</html>
